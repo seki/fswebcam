@@ -848,16 +848,14 @@ static int src_v4l2_open(src_t *src)
 	/* Set the frame-rate if > 0 */
 	if(src->fps) src_v4l2_set_fps(src);
 	
-	/* Delay to let the image settle down. */
+	/* Wait for a cue from stdin. */
 	if(src->delay == 0xffffffff)
 	{
-		fd_set fds;
-
-		FD_ZERO(&fds);
-		FD_SET(0, &fds);
-
-		select(1, &fds, NULL, NULL, NULL);
+		MSG("Waiting for a cue from stdin.");
+		char buf;
+		read(0, &buf, 1);
 	}
+	/* Delay to let the image settle down. */
 	else if(src->delay)
 	{
 		MSG("Delaying %i seconds.", src->delay);

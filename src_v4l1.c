@@ -771,8 +771,15 @@ static int src_v4l_open(src_t *src)
 		return(-1);
 	}
 	
+	/* Wait for a cue from stdin. */
+	if(src->delay == 0xffffffff)
+	{
+		MSG("Waiting for a cue from stdin.");
+		char buf;
+		read(0, &buf, 1);
+	}
 	/* Delay to let the image settle down. */
-	if(src->delay)
+	else if(src->delay)
 	{
 		MSG("Delaying %i seconds.", src->delay);
 		usleep(src->delay * 1000 * 1000);
