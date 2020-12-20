@@ -849,7 +849,16 @@ static int src_v4l2_open(src_t *src)
 	if(src->fps) src_v4l2_set_fps(src);
 	
 	/* Delay to let the image settle down. */
-	if(src->delay)
+	if(src->delay == 0xffffffff)
+	{
+		fd_set fds;
+
+		FD_ZERO(&fds);
+		FD_SET(0, &fds);
+
+		select(1, &fds, NULL, NULL, NULL);
+	}
+	else if(src->delay)
 	{
 		MSG("Delaying %i seconds.", src->delay);
 		usleep(src->delay * 1000 * 1000);
